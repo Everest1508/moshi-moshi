@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Icon Generator</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        .icon-preview { margin: 10px; display: inline-block; }
+        canvas { border: 1px solid #ccc; margin: 5px; }
+    </style>
+</head>
+<body>
+    <h2>Chrome Extension Icon Generator</h2>
+    <p>Right-click each icon and "Save image as" to download:</p>
+    
+    <div class="icon-preview">
+        <h3>16x16</h3>
+        <canvas id="icon16" width="16" height="16"></canvas>
+    </div>
+    
+    <div class="icon-preview">
+        <h3>48x48</h3>
+        <canvas id="icon48" width="48" height="48"></canvas>
+    </div>
+    
+    <div class="icon-preview">
+        <h3>128x128</h3>
+        <canvas id="icon128" width="128" height="128"></canvas>
+    </div>
+
+    <script>
+        function createIcon(canvasId, size) {
+            const canvas = document.getElementById(canvasId);
+            const ctx = canvas.getContext('2d');
+            
+            // Background gradient
+            const gradient = ctx.createLinearGradient(0, 0, size, size);
+            gradient.addColorStop(0, '#667eea');
+            gradient.addColorStop(1, '#764ba2');
+            
+            ctx.fillStyle = gradient;
+            ctx.fillRect(0, 0, size, size);
+            
+            // Add rounded corners
+            ctx.globalCompositeOperation = 'destination-in';
+            ctx.beginPath();
+            ctx.roundRect(0, 0, size, size, size * 0.15);
+            ctx.fill();
+            ctx.globalCompositeOperation = 'source-over';
+            
+            // Add chat bubble
+            const bubbleSize = size * 0.6;
+            const bubbleX = (size - bubbleSize) / 2;
+            const bubbleY = (size - bubbleSize) / 2;
+            
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.9)';
+            ctx.beginPath();
+            ctx.roundRect(bubbleX, bubbleY, bubbleSize, bubbleSize * 0.7, size * 0.1);
+            ctx.fill();
+            
+            // Add dots for chat
+            const dotSize = size * 0.08;
+            const dotSpacing = size * 0.15;
+            
+            ctx.fillStyle = '#667eea';
+            ctx.beginPath();
+            ctx.arc(bubbleX + dotSpacing, bubbleY + bubbleSize * 0.3, dotSize, 0, 2 * Math.PI);
+            ctx.fill();
+            
+            ctx.beginPath();
+            ctx.arc(bubbleX + dotSpacing * 2, bubbleY + bubbleSize * 0.3, dotSize, 0, 2 * Math.PI);
+            ctx.fill();
+            
+            ctx.beginPath();
+            ctx.arc(bubbleX + dotSpacing * 3, bubbleY + bubbleSize * 0.3, dotSize, 0, 2 * Math.PI);
+            ctx.fill();
+        }
+        
+        // Generate all icons
+        createIcon('icon16', 16);
+        createIcon('icon48', 48);
+        createIcon('icon128', 128);
+    </script>
+</body>
+</html>
