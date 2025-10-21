@@ -10,7 +10,7 @@ const Home = () => {
           <h1>
             <img 
               src="/moshi-moshi-icon.png" 
-              alt="Moshi Moshi" 
+              alt="Moshi Moshi Chrome Extension - Real-time Movie Chat" 
               style={{
                 width: '80px', 
                 height: '80px', 
@@ -19,11 +19,11 @@ const Home = () => {
                 filter: 'drop-shadow(0 4px 8px rgba(0,0,0,0.2))'
               }} 
             />
-            Moshi Moshi
+            Moshi Moshi - Real-time Movie Chat Extension
           </h1>
-          <p className="text-xl mb-6">Chat with friends while watching movies together!</p>
+          <p className="text-xl mb-6">Chat with friends while watching movies together! The ultimate Chrome extension for movie nights.</p>
           <p className="text-lg mb-12" style={{opacity: 0.9}}>
-            Perfect for long-distance movie nights with real-time messaging and stream-style popup notifications.
+            Perfect for long-distance movie nights with real-time messaging, stream-style popup notifications, and instant chat features.
           </p>
           
           <div style={{display: 'flex', gap: '1rem', justifyContent: 'center', flexWrap: 'wrap'}}>
@@ -50,8 +50,8 @@ const Home = () => {
       <section id="features" className="features">
         <div className="container">
           <div className="text-center mb-16">
-            <h2 className="text-4xl font-bold mb-4">✨ Features</h2>
-            <p className="text-xl text-gray-600">Everything you need for the perfect movie night chat experience</p>
+            <h2 className="text-4xl font-bold mb-4">Chrome Extension Features</h2>
+            <p className="text-xl text-gray-600">Everything you need for the perfect movie night chat experience with real-time messaging</p>
           </div>
           
           <div className="grid grid-cols-3">
@@ -61,8 +61,8 @@ const Home = () => {
                   <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
                 </svg>
               </div>
-              <h3 className="text-xl font-bold mb-4">Real-time Chat</h3>
-              <p className="text-gray-600">Instant messaging with friends while watching movies on any website.</p>
+              <h3 className="text-xl font-bold mb-4">Real-time Chat Messages</h3>
+              <p className="text-gray-600">Instant messaging with friends while watching movies on any website. Send and receive messages instantly during your movie night.</p>
             </div>
             
             <div className="feature-card">
@@ -72,8 +72,8 @@ const Home = () => {
                   <polyline points="9,22 9,12 15,12 15,22"/>
                 </svg>
               </div>
-              <h3 className="text-xl font-bold mb-4">Room-based System</h3>
-              <p className="text-gray-600">Join private rooms to chat with specific groups of people.</p>
+              <h3 className="text-xl font-bold mb-4">Private Chat Rooms</h3>
+              <p className="text-gray-600">Join private rooms to chat with specific groups of people. Create secure movie night chat rooms for your friends.</p>
             </div>
             
             <div className="feature-card">
@@ -84,8 +84,8 @@ const Home = () => {
                   <line x1="12" y1="17" x2="12" y2="21"/>
                 </svg>
               </div>
-              <h3 className="text-xl font-bold mb-4">Stream-style Popups</h3>
-              <p className="text-gray-600">Messages appear as popup notifications when chat is closed.</p>
+              <h3 className="text-xl font-bold mb-4">Stream-style Popup Notifications</h3>
+              <p className="text-gray-600">Messages appear as popup notifications when chat is closed. Never miss a message during your movie watching experience.</p>
             </div>
             
             <div className="feature-card">
@@ -128,33 +128,33 @@ const Home = () => {
       <section className="how-it-works">
         <div className="container">
           <div className="text-center mb-16">
-            <h2 className="text-4xl font-bold mb-4">🚀 How It Works</h2>
-            <p className="text-xl text-gray-600">Get started in just a few simple steps</p>
+            <h2 className="text-4xl font-bold mb-4">How to Install Moshi Moshi Extension</h2>
+            <p className="text-xl text-gray-600">Get started with the Chrome extension in just a few simple steps</p>
           </div>
           
           <div className="grid grid-cols-4">
             <div className="step">
               <div className="step-number">1</div>
-              <h3 className="text-lg font-semibold mb-2">Install Extension</h3>
-              <p className="text-gray-600">Download from Chrome Web Store</p>
+              <h3 className="text-lg font-semibold mb-2">Download Chrome Extension</h3>
+              <p className="text-gray-600">Download the Moshi Moshi extension from our website</p>
             </div>
             
             <div className="step">
               <div className="step-number">2</div>
-              <h3 className="text-lg font-semibold mb-2">Enter Details</h3>
-              <p className="text-gray-600">Your name and room ID</p>
+              <h3 className="text-lg font-semibold mb-2">Enter Your Name and Room ID</h3>
+              <p className="text-gray-600">Set up your username and create or join a chat room</p>
             </div>
             
             <div className="step">
               <div className="step-number">3</div>
-              <h3 className="text-lg font-semibold mb-2">Share Room ID</h3>
-              <p className="text-gray-600">With friends to chat together</p>
+              <h3 className="text-lg font-semibold mb-2">Share Room ID with Friends</h3>
+              <p className="text-gray-600">Invite friends to join your movie night chat room</p>
             </div>
             
             <div className="step">
               <div className="step-number">4</div>
-              <h3 className="text-lg font-semibold mb-2">Start Chatting</h3>
-              <p className="text-gray-600">While watching movies!</p>
+              <h3 className="text-lg font-semibold mb-2">Start Real-time Chat</h3>
+              <p className="text-gray-600">Begin chatting with friends while watching movies together!</p>
             </div>
           </div>
         </div>
@@ -163,9 +163,9 @@ const Home = () => {
       {/* CTA Section */}
       <section className="cta">
         <div className="container">
-          <h2 className="text-4xl font-bold mb-6">Ready to Start Your Movie Night?</h2>
+          <h2 className="text-4xl font-bold mb-6">Ready to Start Your Movie Night Chat?</h2>
           <p className="text-xl mb-8" style={{opacity: 0.9}}>
-            Join thousands of users who are already enjoying Moshi Moshi!
+            Join thousands of users who are already enjoying real-time movie chat with Moshi Moshi Chrome extension!
           </p>
           <Link to="/download" className="btn btn-primary" style={{background: 'white', color: '#fc8eac'}}>
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{marginRight: '0.5rem', verticalAlign: 'middle'}}>
