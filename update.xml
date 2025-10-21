@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<updates>
+  <update>
+    <version>1.0.0</version>
+    <required>true</required>
+    <url>https://api.moshi-moshi.encryptedbar.com/updates/moshi-moshi-1.0.0.crx</url>
+    <hash>sha256:64a29daca7cfdbdcfbc13e7516e09a6745fd681fe03c391cfbd7989c41c57897</hash>
+    <size>676307</size>
+    <release_notes>
+      <![CDATA[
+      <h3>Moshi Moshi v1.0.0 - Initial Release</h3>
+      <p>🎉 Welcome to Moshi Moshi! The perfect extension for long-distance movie nights.</p>
+      
+      <h4>✨ Features:</h4>
+      <ul>
+        <li>Real-time chat with friends while watching movies</li>
+        <li>Room-based system for private group chats</li>
+        <li>Stream-style popup notifications when chat is closed</li>
+        <li>Floating toggle button for easy access</li>
+        <li>Resizable chat window (double-click header)</li>
+        <li>Emoji reactions for messages</li>
+        <li>Cross-tab chat on any webpage</li>
+      </ul>
+      
+      <h4>🚀 How to Use:</h4>
+      <ol>
+        <li>Click the Moshi Moshi icon in your Chrome toolbar</li>
+        <li>Enter your name and a room ID</li>
+        <li>Share the room ID with friends</li>
+        <li>Start chatting while watching movies together!</li>
+      </ol>
+      
+      <p>Perfect for couples, friends, and families who want to stay connected while enjoying movies together! 🍿✨</p>
+      ]]>
+    </release_notes>
+    <date>2025-10-21</date>
+    <min_browser_version>88.0</min_browser_version>
+    <max_browser_version>999.0</max_browser_version>
+  </update>
+</updates>

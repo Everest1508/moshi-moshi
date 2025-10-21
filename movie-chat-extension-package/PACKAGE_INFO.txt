@@ -1,0 +1,24 @@
+Moshi Moshi - Chrome Extension Package
+=====================================
+
+Package created: Tue Oct 21 04:27:14 AM IST 2025
+Version: 1.0.0
+Production Server: api.moshi-moshi.encryptedbar.com
+
+Files included:
+- manifest.json (Extension manifest)
+- popup.html (Extension popup interface)
+- popup.js (Popup functionality)
+- content.js (Content script for chat window)
+- styles.css (Chat window styles)
+- config.js (Configuration - set to production)
+- icons/ (Extension icons)
+
+Instructions:
+1. Go to Chrome Web Store Developer Dashboard
+2. Click "Add new item"
+3. Upload the ZIP file of this directory
+4. Fill in store listing details from CHROME_STORE_LISTING.md
+5. Submit for review
+
+Note: Make sure your server is running at api.moshi-moshi.encryptedbar.com

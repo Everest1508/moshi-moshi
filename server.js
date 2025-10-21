@@ -24,8 +24,178 @@ class MovieChatServer {
       return;
     }
     
+    const url = new URL(req.url, `http://${req.headers.host}`);
+    
+    // Serve update.xml for extension updates
+    if (url.pathname === '/updates/update.xml') {
+      res.writeHead(200, {'Content-Type': 'application/xml'});
+      res.end(`<?xml version="1.0" encoding="UTF-8"?>
+<updates>
+  <update>
+    <version>1.0.0</version>
+    <required>true</required>
+    <url>https://api.moshi-moshi.encryptedbar.com/updates/moshi-moshi-1.0.0.crx</url>
+    <hash>sha256:YOUR_EXTENSION_HASH_HERE</hash>
+    <size>123456</size>
+    <release_notes>
+      <![CDATA[
+      <h3>Moshi Moshi v1.0.0 - Initial Release</h3>
+      <p>🎉 Welcome to Moshi Moshi! The perfect extension for long-distance movie nights.</p>
+      
+      <h4>✨ Features:</h4>
+      <ul>
+        <li>Real-time chat with friends while watching movies</li>
+        <li>Room-based system for private group chats</li>
+        <li>Stream-style popup notifications when chat is closed</li>
+        <li>Floating toggle button for easy access</li>
+        <li>Resizable chat window (double-click header)</li>
+        <li>Emoji reactions for messages</li>
+        <li>Cross-tab chat on any webpage</li>
+      </ul>
+      
+      <h4>🚀 How to Use:</h4>
+      <ol>
+        <li>Click the Moshi Moshi icon in your Chrome toolbar</li>
+        <li>Enter your name and a room ID</li>
+        <li>Share the room ID with friends</li>
+        <li>Start chatting while watching movies together!</li>
+      </ol>
+      
+      <p>Perfect for couples, friends, and families who want to stay connected while enjoying movies together! 🍿✨</p>
+      ]]>
+    </release_notes>
+    <date>2024-01-15</date>
+    <min_browser_version>88.0</min_browser_version>
+    <max_browser_version>999.0</max_browser_version>
+  </update>
+</updates>`);
+      return;
+    }
+    
+    // Serve privacy policy
+    if (url.pathname === '/privacy') {
+      res.writeHead(200, {'Content-Type': 'text/html'});
+      res.end(`<!DOCTYPE html>
+<html>
+<head>
+    <title>Privacy Policy - Moshi Moshi</title>
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; }
+        h1, h2 { color: #333; }
+        .header { text-align: center; margin-bottom: 30px; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>📞 Moshi Moshi</h1>
+        <h2>Privacy Policy</h2>
+    </div>
+    
+    <p><strong>Last updated: October 21, 2025</strong></p>
+    
+    <h3>Overview</h3>
+    <p>Moshi Moshi is a Chrome extension that enables real-time chat functionality while browsing the web. This privacy policy explains how we handle your data.</p>
+    
+    <h3>Data Collection and Usage</h3>
+    <h4>What We Collect</h4>
+    <ul>
+        <li><strong>Username</strong>: The display name you choose for chat</li>
+        <li><strong>Room ID</strong>: The chat room identifier you enter</li>
+        <li><strong>Messages</strong>: Chat messages you send and receive</li>
+        <li><strong>Connection Status</strong>: Whether you're connected to the chat server</li>
+    </ul>
+    
+    <h4>What We DON'T Collect</h4>
+    <ul>
+        <li>Personal information (name, email, phone)</li>
+        <li>Browsing history or website data</li>
+        <li>Location data</li>
+        <li>Device information</li>
+        <li>Analytics or tracking data</li>
+    </ul>
+    
+    <h3>Data Storage</h3>
+    <h4>Local Storage</h4>
+    <p>Your username and room ID are stored locally in Chrome's storage. This data remains on your device and is not transmitted to external servers.</p>
+    
+    <h4>Server Communication</h4>
+    <p>Messages are transmitted through WebSocket connections. No messages are permanently stored on our servers. Messages are only delivered to active users in the same room.</p>
+    
+    <h3>Data Security</h3>
+    <p>All communication uses WebSocket protocol. No sensitive data is transmitted. Messages are only visible to users in the same room.</p>
+    
+    <h3>Your Rights</h3>
+    <ul>
+        <li>You can disconnect from chat rooms at any time</li>
+        <li>You can change your username in the extension settings</li>
+        <li>You can uninstall the extension to remove all local data</li>
+    </ul>
+    
+    <h3>Contact Information</h3>
+    <p>For questions about this privacy policy, please contact us at support@moshi-moshi.encryptedbar.com</p>
+    
+    <p><em>This extension complies with Chrome Web Store policies and Google's privacy requirements.</em></p>
+</body>
+</html>`);
+      return;
+    }
+    
+    // Serve support page
+    if (url.pathname === '/support') {
+      res.writeHead(200, {'Content-Type': 'text/html'});
+      res.end(`<!DOCTYPE html>
+<html>
+<head>
+    <title>Support - Moshi Moshi</title>
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; }
+        h1, h2 { color: #333; }
+        .header { text-align: center; margin-bottom: 30px; }
+        .faq { margin: 20px 0; }
+        .faq h3 { color: #667eea; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>📞 Moshi Moshi</h1>
+        <h2>Support & FAQ</h2>
+    </div>
+    
+    <div class="faq">
+        <h3>How do I connect to a chat room?</h3>
+        <p>Click the Moshi Moshi icon in your Chrome toolbar, enter your name and a room ID, then click "Connect to Room". Share the same room ID with your friends to chat together.</p>
+    </div>
+    
+    <div class="faq">
+        <h3>Why can't I connect to the server?</h3>
+        <p>Make sure you have an internet connection and that the server is running. If you're still having issues, try refreshing the page or restarting the extension.</p>
+    </div>
+    
+    <div class="faq">
+        <h3>How do I resize the chat window?</h3>
+        <p>Double-click the chat header to toggle between big and small sizes. You can also use the floating toggle button in the bottom-right corner.</p>
+    </div>
+    
+    <div class="faq">
+        <h3>Can I use this on any website?</h3>
+        <p>Yes! Moshi Moshi works on any website. The chat window will appear on any webpage you visit while connected.</p>
+    </div>
+    
+    <div class="faq">
+        <h3>Are my messages private?</h3>
+        <p>Messages are only visible to people in the same room. We don't store or log your messages permanently.</p>
+    </div>
+    
+    <h3>Still need help?</h3>
+    <p>Contact us at support@moshi-moshi.encryptedbar.com</p>
+</body>
+</html>`);
+      return;
+    }
+    
+    // Default response
     res.writeHead(200, {'Content-Type': 'text/plain'});
-    res.end('Movie Chat Server Running');
+    res.end('Moshi Moshi Server Running');
   }
 
   setupServer() {

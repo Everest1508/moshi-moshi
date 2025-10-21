@@ -1,9 +1,9 @@
-# Privacy Policy for Movie Chat Companion
+# Privacy Policy for Moshi Moshi
 
 **Last updated: [Current Date]**
 
 ## Overview
-Movie Chat Companion is a Chrome extension that enables real-time chat functionality while browsing the web. This privacy policy explains how we handle your data.
+Moshi Moshi is a Chrome extension that enables real-time chat functionality while browsing the web. This privacy policy explains how we handle your data.
 
 ## Data Collection and Usage
 
@@ -42,7 +42,7 @@ Movie Chat Companion is a Chrome extension that enables real-time chat functiona
 ### WebSocket Server
 - We operate our own WebSocket server for real-time communication
 - Messages are not logged or stored permanently
-- Server is hosted on localhost during development
+- Server is hosted at api.moshi-moshi.encryptedbar.com
 
 ## Data Security
 - All communication uses WebSocket protocol

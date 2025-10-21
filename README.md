@@ -1,4 +1,4 @@
-# 🎬 Movie Chat Companion
+# 📞 Moshi Moshi
 
 A Chrome extension that allows you to chat with friends while watching movies together! Perfect for long-distance movie nights and shared viewing experiences.
 
