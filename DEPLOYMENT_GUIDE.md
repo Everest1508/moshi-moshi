@@ -33,6 +33,31 @@ git push heroku main
 - Select Node.js
 - Set start command: `node server.js`
 
+### 4. **Cloudflare Workers + Durable Objects** (Best for WebSockets)
+
+This repo includes a Workers-compatible WebSocket API that matches the current extension protocol (send `{"type":"join","username":"...","roomId":"..."}` after connecting).
+
+```bash
+cd cloudflare-worker
+npm install
+
+# First time only:
+npx wrangler login
+
+# Local dev
+npm run dev
+
+# Deploy
+npm run deploy
+```
+
+Notes:
+- Your extension should point to your deployed Worker URL with `wss://...` (e.g. `wss://api.yourdomain.com`).
+- The Worker also serves:
+  - `/updates/update.xml`
+  - `/privacy`
+  - `/support`
+
 ## 🔧 Server Updates Needed
 
 ### Update server.js for production:

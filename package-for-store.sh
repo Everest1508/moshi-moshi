@@ -17,7 +17,12 @@ mkdir $PACKAGE_DIR
 # Copy required files
 echo "📋 Copying extension files..."
 cp manifest.json $PACKAGE_DIR/
+cp background.js $PACKAGE_DIR/
+cp offscreen.html $PACKAGE_DIR/
+cp offscreen.js $PACKAGE_DIR/
+cp notification.mp3 $PACKAGE_DIR/
 cp popup.html $PACKAGE_DIR/
+cp popup.css $PACKAGE_DIR/
 cp popup.js $PACKAGE_DIR/
 cp content.js $PACKAGE_DIR/
 cp styles.css $PACKAGE_DIR/
@@ -34,12 +39,17 @@ Moshi Moshi - Chrome Extension Package
 =====================================
 
 Package created: $(date)
-Version: 1.0.0
+Version: 1.0.1
 Production Server: api.moshi-moshi.encryptedbar.com
 
 Files included:
 - manifest.json (Extension manifest)
+- background.js (Service worker)
+- offscreen.html (Offscreen audio document)
+- offscreen.js (Offscreen audio logic)
+- notification.mp3 (Message sound)
 - popup.html (Extension popup interface)
+- popup.css (Popup styling)
 - popup.js (Popup functionality)
 - content.js (Content script for chat window)
 - styles.css (Chat window styles)

@@ -9,6 +9,7 @@ class MovieChatServer {
     this.wss = new WebSocket.Server({ server: this.server });
     this.rooms = new Map(); // roomId -> Set of clients
     this.clients = new Map(); // client -> {username, roomId, ws}
+    this.heartbeatInterval = null;
     
     this.setupServer();
   }
@@ -201,6 +202,12 @@ class MovieChatServer {
   setupServer() {
     this.wss.on('connection', (ws, req) => {
       console.log('New client connected');
+
+      // Heartbeat tracking (helps detect dead connections and keeps some proxies from idling out)
+      ws.isAlive = true;
+      ws.on('pong', () => {
+        ws.isAlive = true;
+      });
       
       ws.on('message', (message) => {
         try {
@@ -225,6 +232,18 @@ class MovieChatServer {
       });
     });
 
+    // Server-side heartbeat: ping clients periodically
+    this.heartbeatInterval = setInterval(() => {
+      this.wss.clients.forEach((ws) => {
+        if (ws.isAlive === false) {
+          try { ws.terminate(); } catch (_) {}
+          return;
+        }
+        ws.isAlive = false;
+        try { ws.ping(); } catch (_) {}
+      });
+    }, 30000);
+
     this.server.listen(this.port, () => {
       console.log(`🎬 Movie Chat Server running on port ${this.port}`);
       console.log(`WebSocket endpoint: ws://localhost:${this.port}`);
@@ -241,6 +260,9 @@ class MovieChatServer {
         break;
       case 'reaction':
         this.handleReaction(ws, data);
+        break;
+      case 'ping':
+        ws.send(JSON.stringify({ type: 'pong', timestamp: new Date().toISOString() }));
         break;
       default:
         ws.send(JSON.stringify({
@@ -310,8 +332,8 @@ class MovieChatServer {
       roomId: client.roomId
     };
 
-    // Broadcast to all clients in the room
-    this.broadcastToRoom(client.roomId, messageData);
+    // Broadcast to all clients in the room (exclude sender; sender already renders locally)
+    this.broadcastToRoom(client.roomId, messageData, ws);
     
     console.log(`Message from ${client.username} in ${client.roomId}: ${data.message}`);
   }
@@ -406,11 +428,14 @@ class MovieChatServer {
 }
 
 // Start the server
-const server = new MovieChatServer(3000);
+const server = new MovieChatServer();
 
 // Graceful shutdown
 process.on('SIGINT', () => {
   console.log('\nShutting down server...');
+  try {
+    if (server.heartbeatInterval) clearInterval(server.heartbeatInterval);
+  } catch (_) {}
   server.server.close(() => {
     console.log('Server closed');
     process.exit(0);

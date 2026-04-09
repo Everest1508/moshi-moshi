@@ -1,11 +1,12 @@
 {
   "manifest_version": 3,
   "name": "Moshi Moshi",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Chat with friends while watching movies together! Perfect for long-distance movie nights with real-time messaging and stream-style popup notifications.",
   "permissions": [
     "activeTab",
-    "storage"
+    "storage",
+    "offscreen"
   ],
   "host_permissions": [
     "http://localhost:3000/*",
@@ -19,6 +20,9 @@
       "css": ["styles.css"]
     }
   ],
+  "background": {
+    "service_worker": "background.js"
+  },
   "action": {
     "default_popup": "popup.html",
     "default_title": "Moshi Moshi"

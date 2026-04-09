@@ -1,0 +1,12 @@
+name = "moshi-moshi-api"
+main = "src/index.ts"
+compatibility_date = "2026-03-22"
+
+[durable_objects]
+bindings = [
+  { name = "CHAT_HUB", class_name = "ChatHub" }
+]
+
+[[migrations]]
+tag = "v1"
+new_sqlite_classes = ["ChatHub"]

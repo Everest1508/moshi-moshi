@@ -8,8 +8,12 @@ class MovieChat {
     this.chatVisible = false;
     this.chatSize = 'big'; // 'big' or 'small'
     this.messages = [];
-    this.reactions = {};
     this.streamMessageQueue = [];
+    this.keepAliveTimer = null;
+    this.shouldReconnect = false;
+    this.reconnectAttempts = 0;
+    this.reconnectTimer = null;
+    this.soundEnabled = true;
     
     this.init();
   }
@@ -25,14 +29,14 @@ class MovieChat {
   createChatWindow() {
     // Create connection status indicator
     const statusDiv = document.createElement('div');
-    statusDiv.className = 'connection-status disconnected';
+    statusDiv.className = 'connection-status moshi-theme disconnected';
     statusDiv.textContent = 'Disconnected';
     statusDiv.id = 'movie-chat-status';
     document.body.appendChild(statusDiv);
 
     // Create main chat container
     const chatContainer = document.createElement('div');
-    chatContainer.className = 'movie-chat-container';
+    chatContainer.className = 'movie-chat-container moshi-theme';
     chatContainer.id = 'movie-chat-container';
     
     chatContainer.innerHTML = `
@@ -61,7 +65,7 @@ class MovieChat {
 
   createFloatingToggle() {
     const toggleDiv = document.createElement('div');
-    toggleDiv.className = 'floating-toggle';
+    toggleDiv.className = 'floating-toggle moshi-theme';
     toggleDiv.id = 'floating-toggle';
     
     toggleDiv.innerHTML = `
@@ -110,15 +114,26 @@ class MovieChat {
         case 'connect':
           this.connect(request.username, request.roomId);
           break;
+        case 'disconnect':
+          this.disconnect();
+          break;
         case 'toggleChat':
           this.toggleChat();
+          break;
+        case 'showChat':
+          this.showChat();
+          break;
+        case 'setSoundEnabled':
+          this.soundEnabled = !!request.enabled;
+          chrome.storage.local.set({ soundEnabled: this.soundEnabled });
           break;
       }
     });
   }
 
   loadStoredData() {
-    chrome.storage.local.get(['username', 'roomId', 'isConnected'], (data) => {
+    chrome.storage.local.get(['username', 'roomId', 'isConnected', 'soundEnabled'], (data) => {
+      if (typeof data.soundEnabled === 'boolean') this.soundEnabled = data.soundEnabled;
       if (data.isConnected && data.username && data.roomId) {
         this.connect(data.username, data.roomId);
       }
@@ -128,14 +143,21 @@ class MovieChat {
   connect(username, roomId) {
     this.username = username;
     this.roomId = roomId;
+    this.shouldReconnect = true;
+    this.reconnectAttempts = 0;
     
     // Connect to WebSocket server using config
     const serverUrl = window.MOVIE_CHAT_CONFIG.websocketUrl;
+    if (this.ws) {
+      try { this.ws.close(); } catch (_) {}
+      this.ws = null;
+    }
     this.ws = new WebSocket(serverUrl);
     
     this.ws.onopen = () => {
       this.isConnected = true;
       this.updateConnectionStatus(true);
+      this.startKeepAlive();
       this.ws.send(JSON.stringify({
         type: 'join',
         username: username,
@@ -152,7 +174,9 @@ class MovieChat {
     this.ws.onclose = () => {
       this.isConnected = false;
       this.updateConnectionStatus(false);
+      this.stopKeepAlive();
       this.addSystemMessage('Disconnected from server');
+      this.scheduleReconnect();
     };
 
     this.ws.onerror = (error) => {
@@ -161,23 +185,70 @@ class MovieChat {
     };
   }
 
+  disconnect() {
+    this.shouldReconnect = false;
+    if (this.reconnectTimer) clearTimeout(this.reconnectTimer);
+    this.reconnectTimer = null;
+    if (this.ws) {
+      try { this.ws.close(); } catch (_) {}
+      this.ws = null;
+    }
+    this.isConnected = false;
+    this.updateConnectionStatus(false);
+    this.stopKeepAlive();
+    this.addSystemMessage('Disconnected');
+  }
+
+  startKeepAlive() {
+    this.stopKeepAlive();
+    this.keepAliveTimer = setInterval(() => {
+      if (!this.ws || this.ws.readyState !== WebSocket.OPEN) return;
+      try {
+        this.ws.send(JSON.stringify({ type: 'ping', timestamp: new Date().toISOString() }));
+      } catch (_) {}
+    }, 25000);
+  }
+
+  stopKeepAlive() {
+    if (this.keepAliveTimer) clearInterval(this.keepAliveTimer);
+    this.keepAliveTimer = null;
+  }
+
+  scheduleReconnect() {
+    if (!this.shouldReconnect) return;
+    if (this.reconnectTimer) return;
+
+    const attempt = this.reconnectAttempts;
+    const backoffMs = Math.min(60000, 1000 * Math.pow(2, attempt));
+    const jitterMs = Math.floor(Math.random() * 500);
+    const delayMs = Math.max(1500, backoffMs + jitterMs);
+
+    this.reconnectTimer = setTimeout(() => {
+      this.reconnectTimer = null;
+      if (!this.shouldReconnect) return;
+      this.reconnectAttempts += 1;
+      this.addSystemMessage('Reconnecting…');
+      this.connect(this.username, this.roomId);
+    }, delayMs);
+  }
+
   handleMessage(data) {
     switch (data.type) {
       case 'message':
         this.addMessage(data.username, data.message, data.timestamp, false);
+        this.notifyIncomingSound();
         // Show stream message if chat is not visible
         if (!this.chatVisible) {
           this.showStreamMessage(data.username, data.message);
         }
-        break;
-      case 'reaction':
-        this.addReaction(data.messageId, data.reaction, data.username);
         break;
       case 'userJoined':
         this.addSystemMessage(`${data.username} joined the room`);
         break;
       case 'userLeft':
         this.addSystemMessage(`${data.username} left the room`);
+        break;
+      case 'pong':
         break;
     }
   }
@@ -212,66 +283,31 @@ class MovieChat {
       <div class="message-sender">${username}</div>
       <div class="message-content">${this.escapeHtml(message)}</div>
       <div class="message-time">${time}</div>
-      <div class="reactions" id="reactions-${Date.now()}"></div>
     `;
     
     messagesContainer.appendChild(messageDiv);
     messagesContainer.scrollTop = messagesContainer.scrollHeight;
-    
-    // Add reaction buttons
-    this.addReactionButtons(messageDiv);
   }
 
   addSystemMessage(message) {
     const messagesContainer = document.getElementById('chat-messages');
     const messageDiv = document.createElement('div');
-    messageDiv.className = 'message other';
+    messageDiv.className = 'message system';
     
     messageDiv.innerHTML = `
       <div class="message-sender">System</div>
-      <div class="message-content" style="background: #e3f2fd; color: #1976d2; font-style: italic;">${this.escapeHtml(message)}</div>
+      <div class="message-content">${this.escapeHtml(message)}</div>
     `;
     
     messagesContainer.appendChild(messageDiv);
     messagesContainer.scrollTop = messagesContainer.scrollHeight;
   }
 
-  addReactionButtons(messageDiv) {
-    const reactionsDiv = messageDiv.querySelector('.reactions');
-    const reactions = ['❤️', '😂', '😮', '😢', '👍', '👎'];
-    
-    reactions.forEach(reaction => {
-      const reactionBtn = document.createElement('span');
-      reactionBtn.className = 'reaction';
-      reactionBtn.textContent = reaction;
-      reactionBtn.addEventListener('click', () => this.sendReaction(reaction, messageDiv));
-      reactionsDiv.appendChild(reactionBtn);
-    });
-  }
-
-  sendReaction(reaction, messageDiv) {
-    if (!this.isConnected) return;
-    
-    const reactionData = {
-      type: 'reaction',
-      reaction: reaction,
-      roomId: this.roomId,
-      username: this.username
-    };
-    
-    this.ws.send(JSON.stringify(reactionData));
-    
-    // Add visual feedback
-    const reactionBtn = messageDiv.querySelector(`.reaction:contains("${reaction}")`);
-    if (reactionBtn) {
-      reactionBtn.classList.add('active');
-      setTimeout(() => reactionBtn.classList.remove('active'), 200);
-    }
-  }
-
-  addReaction(messageId, reaction, username) {
-    // Implementation for receiving reactions
-    console.log(`Reaction received: ${reaction} from ${username}`);
+  notifyIncomingSound() {
+    if (!this.soundEnabled) return;
+    try {
+      chrome.runtime.sendMessage({ action: 'playIncomingSound' });
+    } catch (_) {}
   }
 
   showEmojiPicker() {
@@ -302,6 +338,17 @@ class MovieChat {
     }
   }
 
+  showChat() {
+    const chatContainer = document.getElementById('movie-chat-container');
+    const toggleIcon = document.querySelector('#floating-toggle .toggle-icon');
+    this.chatVisible = true;
+    chatContainer.classList.add('visible');
+    if (toggleIcon) {
+      toggleIcon.textContent = '💬';
+      toggleIcon.className = 'toggle-icon chat-open';
+    }
+  }
+
   toggleChatSize() {
     const chatContainer = document.getElementById('movie-chat-container');
     this.chatSize = this.chatSize === 'big' ? 'small' : 'big';
@@ -316,14 +363,34 @@ class MovieChat {
   showStreamMessage(username, message) {
     const queueDiv = document.getElementById('stream-message-queue');
     const messageDiv = document.createElement('div');
-    messageDiv.className = 'stream-message';
+    messageDiv.className = 'stream-message moshi-theme';
+    messageDiv.setAttribute('role', 'status');
+    messageDiv.setAttribute('aria-live', 'polite');
     
+    const time = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    const initial = (username || '?').trim().slice(0, 1).toUpperCase();
     messageDiv.innerHTML = `
-      <div class="stream-sender">${this.escapeHtml(username)}</div>
-      <div class="stream-text">${this.escapeHtml(message)}</div>
+      <div class="stream-toast">
+        <div class="stream-top">
+          <div class="stream-avatar" aria-hidden="true">${this.escapeHtml(initial)}</div>
+          <div class="stream-meta">
+            <div class="stream-sender">${this.escapeHtml(username)}</div>
+            <div class="stream-time">${this.escapeHtml(time)}</div>
+          </div>
+          <div class="stream-cta">Open</div>
+        </div>
+        <div class="stream-text">${this.escapeHtml(message)}</div>
+      </div>
     `;
     
     queueDiv.appendChild(messageDiv);
+
+    messageDiv.addEventListener('click', () => this.showChat(), { once: true });
+
+    // Keep the queue tidy (avoid huge stacks)
+    while (queueDiv.children.length > 4) {
+      queueDiv.removeChild(queueDiv.firstElementChild);
+    }
     
     // Remove the message after animation completes
     setTimeout(() => {
@@ -335,13 +402,9 @@ class MovieChat {
 
   updateConnectionStatus(connected) {
     const statusDiv = document.getElementById('movie-chat-status');
-    if (connected) {
-      statusDiv.textContent = 'Connected';
-      statusDiv.className = 'connection-status connected';
-    } else {
-      statusDiv.textContent = 'Disconnected';
-      statusDiv.className = 'connection-status disconnected';
-    }
+    statusDiv.textContent = connected ? 'Connected' : 'Disconnected';
+    statusDiv.classList.toggle('connected', connected);
+    statusDiv.classList.toggle('disconnected', !connected);
   }
 
   escapeHtml(text) {

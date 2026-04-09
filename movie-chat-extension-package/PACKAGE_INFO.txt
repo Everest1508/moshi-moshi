@@ -1,13 +1,18 @@
 Moshi Moshi - Chrome Extension Package
 =====================================
 
-Package created: Tue Oct 21 04:27:14 AM IST 2025
-Version: 1.0.0
+Package created: Thu Apr  9 08:46:34 PM IST 2026
+Version: 1.0.1
 Production Server: api.moshi-moshi.encryptedbar.com
 
 Files included:
 - manifest.json (Extension manifest)
+- background.js (Service worker)
+- offscreen.html (Offscreen audio document)
+- offscreen.js (Offscreen audio logic)
+- notification.mp3 (Message sound)
 - popup.html (Extension popup interface)
+- popup.css (Popup styling)
 - popup.js (Popup functionality)
 - content.js (Content script for chat window)
 - styles.css (Chat window styles)

@@ -27,7 +27,7 @@ const Download = () => {
               Download Moshi Moshi source code and install it as a developer extension. This is the most reliable method.
             </p>
             <a 
-              href="/downloads/moshi-moshi-source.zip" 
+              href="/downloads/moshi-moshi-v1.0.1.zip" 
               download="moshi-moshi-source.zip"
               className="btn btn-primary"
             >
